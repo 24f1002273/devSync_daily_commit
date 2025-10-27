@@ -1,0 +1,33 @@
+name: Daily Update - 24f1002273@ds.study.iitm.ac.in
+
+on:
+  schedule:
+    - cron: '30 08 * * *'  # Runs daily at 8:30 AM UTC
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  daily-commit:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Configure Git
+        run: |
+          git config --global user.name "DevSync Bot"
+          git config --global user.email "devops@devsync.local"
+      
+      - name: Update status file - 24f1002273@ds.study.iitm.ac.in
+        run: |
+          echo "Last update: $(date -u '+%Y-%m-%d %H:%M:%S UTC')" > DAILY_UPDATE.md
+          echo "Repository: ${{ github.repository }}" >> DAILY_UPDATE.md
+          echo "Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> DAILY_UPDATE.md
+      
+      - name: Create commit
+        run: |
+          git add DAILY_UPDATE.md
+          git commit -m "chore: automated daily update - $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+      
+      - name: Push changes
+        run: git push origin main
